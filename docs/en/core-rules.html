@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Core Rules | Nimora Rules</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="Nimora Rules">
+      <span class="brand-mark"></span>
+      <span>Nimora</span>
+    </a>
+    <nav class="locale-tabs" aria-label="Language">
+      <a class="locale-tab active" href="../en/core-rules.html">English</a><a class="locale-tab" href="../ru/базовые-правила.html">Русский</a>
+    </nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-title">Documentation</div>
+      <nav><a class="nav-link" href="index.html">Nimora</a><a class="nav-link" href="important-note.html">Important Note</a><a class="nav-link" href="what-do-you-need-to-play.html">What Do You Need To Play?</a><a class="nav-link active" href="core-rules.html">Core Rules</a><a class="nav-link" href="for-players.html">For Players</a><a class="nav-link" href="for-game-masters.html">For Game Masters</a><a class="nav-link" href="flow-of-play.html">Flow of Play</a></nav>
+    </aside>
+    <main class="content">
+      <article class="doc">
+<h1 id="core-rules">Core Rules</h1>
+<h2 id="game-master-and-player">Game Master and Player</h2>
+<p><strong>Players</strong> enter an adventure: a story created by the <strong>Game Master</strong>. They take the roles of fictional <strong>Characters</strong> and describe their actions. The <strong>Game Master</strong> describes the consequences.</p>
+<h2 id="ranks">Ranks</h2>
+<p>Many parts of the system use ranks. Ranks make character capabilities easier to understand and reduce the amount of numbers and math.</p>
+<p>Ranks should be used wherever progress, quality, training, or mastery needs to be shown. For example, a scholar who has never held a weapon might have rapier skill at <strong>D</strong> or <strong>E</strong>, but alchemy at <strong>A</strong> or <strong>B</strong>.</p>
+<p>The same idea can be used for tools, weapons, and items to describe their quality and capabilities.</p>
+<h2 id="character">Character</h2>
+<p><strong>Players</strong> and the <strong>Game Master</strong> describe the actions, feelings, and thoughts of the <strong>Characters</strong> they play. A <strong>Character</strong> has <strong>Characteristics</strong>, <strong>Traits</strong>, and <strong>Abilities</strong>. A <strong>Player</strong> plays their own <strong>Character</strong>, while the <strong>Game Master</strong> plays all non-player <strong>Characters</strong>.</p>
+<h3 id="characteristics">Characteristics</h3>
+<p>Each <strong>Character</strong> has characteristics that describe their abilities in different areas.</p>
+<ol><li><strong>Body</strong><br>Physical strength, endurance, pain tolerance, fatigue, and health.<br><span class="list-quote">Example: strike force, body toughness, physical exercise.</span></li><li><strong>Agility</strong><br>Body control, precision, reaction, and coordination.<br><span class="list-quote">Example: precise physical action, speed, balance, stealth.</span></li><li><strong>Mind</strong><br>Analysis, logic, memory, and the ability to connect facts.<br><span class="list-quote">Example: investigation, analysis.</span></li><li><strong>Intuition</strong><br>Instinct, empathy, and the feeling that something is wrong.<br><span class="list-quote">Example: gut feelings, inner instincts.</span></li><li><strong>Will</strong><br>Mental stability, self-control, and resistance to fear or pressure.<br><span class="list-quote">Example: staying sane, resisting terrifying scenes, fear, or pressure.</span></li><li><strong>Influence</strong><br>Ability to affect others: charisma, authority, pressure.<br><span class="list-quote">Example: charm, speech, intimidation, confidence, status.</span></li></ol>
+<p>Each characteristic has a rank and a numerical modifier:</p>
+<ul><li><strong>S</strong> -&gt; <code>+6</code></li><li><strong>A</strong> -&gt; <code>+4</code></li><li><strong>B</strong> -&gt; <code>+2</code></li><li><strong>C</strong> -&gt; <code>0</code></li><li><strong>D</strong> -&gt; <code>-2</code></li><li><strong>E</strong> -&gt; <code>-4</code></li></ul>
+<p>For especially strong or weak cases, extreme ranks can be repeated, such as <strong>SSS</strong> or <strong>EEE</strong>.</p>
+<h3 id="character-rank">Character Rank</h3>
+<p>The <strong>Character Rank</strong> is a general rank based on the character's characteristics. It is a loose summary of the character's overall power and does not directly affect rules.</p>
+<blockquote><p>For example, if a <strong>Character</strong> has characteristics A, B, B, C, C, E, they can be treated as a rank <strong>B</strong> character. These calculations can be interpreted freely and depend on the <strong>Game Master</strong>.</p></blockquote>
+<h3 id="stats">Stats</h3>
+<h4 id="health-points-hp">Health Points (HP)</h4>
+<p><strong>Health Points</strong> are a numerical description of a <strong>Character's</strong> vitality. One simple way to calculate <strong>HP</strong> is to tie it to <strong>Body</strong> rank and the <strong>Character's Health Die</strong>. The <strong>Health Die</strong> can vary between characters, creatures, or archetypes. By default, use <code>d10</code>; a fragile mage might use <code>d6</code>, while a huge monster might use <code>d12</code> or higher.</p>
+<p>Basic example for <code>d10</code>:</p>
+<div class="table-wrap"><table><thead><tr><th>Body Rank</th><th>HP</th></tr></thead><tbody><tr><td><strong>E</strong></td><td><code>10 + 2d10</code></td></tr><tr><td><strong>D</strong></td><td><code>25 + 3d10</code></td></tr><tr><td><strong>C</strong></td><td><code>45 + 4d10</code></td></tr><tr><td><strong>B</strong></td><td><code>70 + 5d10</code></td></tr><tr><td><strong>A</strong></td><td><code>100 + 6d10</code></td></tr><tr><td><strong>S</strong></td><td><code>130 + 7d10</code></td></tr></tbody></table></div>
+<p>For example, a <strong>Character</strong> with <strong>Body B</strong> and a standard <strong>Health Die d10</strong> gets <code>70 + 5d10</code> <strong>HP</strong>. If the same character is unusually fragile and has a <strong>Health Die d6</strong>, they get <code>70 + 5d6</code> <strong>HP</strong>.</p>
+<p>This is only a basic example. If another health system fits your setting better, adapt it: fixed values, wound tracks, separate sanity, armor, or stamina tracks. The important part is that players understand what condition their <strong>Character</strong> is in.</p>
+<h4 id="defense-rating-dr">Defense Rating (DR)</h4>
+<p><strong>Defense Rating</strong> describes how physically protected a <strong>Character</strong> is. It can represent body toughness, dodging, fencing skill, or similar factors.</p>
+<p>By default:</p>
+<p>``<code>text DR = 10 + Body modifier + Agility modifier </code>``</p>
+<p>Armor and <strong>Effects</strong> can add extra modifiers.</p>
+<p>This is a passive defense. The <strong>Game Master</strong> is also encouraged to use active defense based on the situation. For example, a normal body strike against a fencer can use passive <strong>DR</strong>, but an attempt to hit the eye should have higher <strong>DR</strong>, because the target will instinctively protect it.</p>
+<h4 id="movement-speed">Movement Speed</h4>
+<p>Movement speed shows how far a <strong>Character</strong> can move during one <strong>Turn</strong>.</p>
+<p>By default, all <strong>Characters</strong> have a speed of <strong>5 meters</strong>, but this can change based on the <strong>Character</strong> and situation.</p>
+<h4 id="exhaustion">Exhaustion</h4>
+<p><strong>Exhaustion</strong> measures how overloaded a <strong>Character</strong> is. The <strong>Game Master</strong> can use it as a universal cost for abilities and difficult actions. It encourages players to act efficiently and creates tense situations where a character is alive but barely able to act.</p>
+<p><strong>Exhaustion</strong> is tracked numerically. When it crosses certain thresholds, the <strong>Character</strong> gains penalties. The <strong>Game Master</strong> can allow fixed exhaustion costs or allow players to spend more or less effort. If a player tries to spend a huge amount of exhaustion to win immediately, there should be an additional cost beyond simply crossing a threshold. Treat it as pushing the body beyond its limits.</p>
+<p>Default exhaustion states:</p>
+<ol><li><strong>Character</strong> is full of strength and energy.</li><li>Disadvantage on <strong>Checks</strong>.</li><li>Cannot move without help and loses <strong>Bonus Action</strong>.</li><li><strong>Character</strong> falls unconscious.</li></ol>
+<p>The threshold can vary by game, but this default formula can be used:</p>
+<p>``<code>text ExhaustionThreshold_i = (5 + max(Body modifier, Mind modifier, Will modifier)) * i </code>``</p>
+<h3 id="death">Death</h3>
+<p>When a <strong>Character's HP</strong> reaches 0, they enter the &quot;dying&quot; state. They are completely unable to act. If nobody helps them, they die. In <strong>Combat</strong>, help must arrive within 3 turns, and every attack against the dying <strong>Character</strong> reduces the remaining number of turns. Outside combat, the time limit is 1 minute, and any attack immediately ends the chance to help. Helping a dying character is an <strong>Action</strong>.</p>
+<h3 id="traits">Traits</h3>
+<p><strong>Traits</strong> are features that define a <strong>Character's</strong> strengths and weaknesses. They should describe the character from different angles, add depth, and encourage roleplay. Traits should come from the character's story and personality.</p>
+<p>Example traits for a soldier:</p>
+<ul><li>Discipline<br>Years of strict training and mental toughness. <code>+2</code> to fear checks.</li><li>Combat weapon training, rank <strong>A</strong></li><li>Subordination<br>Cannot easily disobey superiors. Will check with disadvantage to ignore orders.</li><li>Callousness<br>A harsh childhood and military life reduced their empathy. Disadvantage on charm, sympathy, and similar checks.</li></ul>
+<h3 id="abilities">Abilities</h3>
+<p><strong>Abilities</strong> are special active actions a <strong>Character</strong> can use to strongly change a situation. They should have limits and costs so players do not abuse them. The cost should match the ability's power and the character's mastery of it.</p>
+<p>For example, if a <strong>Character</strong> can fight with a halberd, normal attacks can be free. But if they invent an unusual technique, using it might cost exhaustion, and the ability rank might be low until the character masters it. Simple and common techniques may have no cost.</p>
+<h3 id="effects">Effects</h3>
+<p><strong>Effects</strong> are statuses applied to a <strong>Character</strong>. They can be positive, negative, or neutral.</p>
+<p>For example, if a rogue secretly puts a laxative into a <strong>Character's</strong> tea, that character might gain the effect &quot;stuck in the bathroom&quot;.</p>
+<h4 id="shells">Shells</h4>
+<p>Optional mechanic.</p>
+<p>Many settings have some form of &quot;shell&quot;: full armor, temporary health, a magic shield, or similar protection. These can be described as shells - extra health layers that must be broken before the character takes damage directly.</p>
+<p>Shells can have types. In a magic setting, a shell might block only magical or only physical damage. In a psychological setting, it might be a mental shell that protects sanity.</p>
+<h3 id="inventory">Inventory</h3>
+<p><strong>Inventory</strong> is the set of <strong>Items</strong> a <strong>Character</strong> has available. The <strong>Game Master</strong> should allow players to carry items as long as they can explain how they store and move them. Weight can be tracked if needed, but most of the time common sense is enough.</p>
+<h3 id="items-and-weapons">Items and Weapons</h3>
+<p><strong>Items</strong> and <strong>Weapons</strong> can also have ranks. A rank can describe quality, power, rarity, convenience, or how well the <strong>Character</strong> has mastered the item.</p>
+<p>Examples:</p>
+<ul><li>a rusty saber might be rank <strong>D</strong> and give disadvantage on difficult fencing actions</li><li>a good military rapier might be rank <strong>B</strong> and work reliably without penalties</li><li>a legendary blade might be rank <strong>A</strong> or <strong>S</strong>, add bonuses, pierce special <strong>Shells</strong>, or unlock a separate <strong>Ability</strong></li></ul>
+<p>An item rank does not always need to become a direct bonus. Sometimes it simply defines what the item can do. A normal knife should not easily pierce heavy armor even with a good roll, while an artifact hammer might break stone without a special formula.</p>
+<h3 id="inspiration">Inspiration</h3>
+<p><strong>Inspiration</strong> is a resource the <strong>Game Master</strong> gives to a <strong>Player</strong>, usually for good play or roleplay, but ultimately at the GM's discretion.</p>
+<p>Inspiration can be spent to:</p>
+<ul><li>reroll any die</li><li>use a <strong>Character Ability</strong> outside its normal rules</li><li>give it to another <strong>Character</strong> for immediate use, but not for later</li></ul>
+<p>Optionally, the <strong>Game Master</strong> can use <strong>Anti-Inspiration</strong>. It is given for bad roleplay or acting against the character. Do not overuse it. The <strong>Game Master</strong> can spend it against the player who received it to:</p>
+<ul><li>reroll any die</li><li>cancel a <strong>Character Ability</strong></li></ul>
+<h2 id="conflict">Conflict</h2>
+<p>A <strong>Conflict</strong> is a situation whose outcome depends on <strong>Checks</strong> from several participants. The highest result wins. On a tie, the defending side wins.</p>
+<p>For one-sided checks, the <strong>Game Master</strong> sets a passive <strong>Difficulty</strong> before the roll.</p>
+<h3 id="difficulty">Difficulty</h3>
+<p>The <strong>Game Master</strong> sets the <strong>Difficulty</strong> based on the situation right before the check. It is a number. The easier and more convenient the action is, the lower the difficulty.</p>
+<p>In opposed conflicts, characteristics usually clash directly, but the <strong>Game Master</strong> can add situational modifiers. Such a modifier should not exceed the maximum characteristic modifier in absolute value.</p>
+<h3 id="check">Check</h3>
+<p>Unless stated otherwise, a <strong>Check</strong> uses <code>d20</code> plus the relevant characteristic modifier and any additional modifiers.</p>
+<p>``<code>text 1d20 + Characteristic modifier + Extra modifiers &gt;= Difficulty </code>``</p>
+<h3 id="critical-success-and-failure">Critical Success and Failure</h3>
+<p>A critical success makes a <strong>Check</strong> successful regardless of modifiers and difficulty. A critical failure does the opposite. By default, a natural 20 is a critical success and a natural 1 is a critical failure. <strong>Traits</strong> and <strong>Abilities</strong> can change these values.</p>
+<p>Critical success or failure can directly change the result to make the moment stand out, but it should not allow absurd outcomes.</p>
+<h3 id="advantages-and-disadvantages">Advantages and Disadvantages</h3>
+<p><strong>Advantage</strong> means the <strong>Character</strong> rolls twice and takes the better result. <strong>Disadvantage</strong> means they take the worse result.</p>
+<p>A critical success overrides any disadvantage. A critical failure overrides any advantage.</p>
+<p>Advantages and disadvantages usually should not stack. Pick the overall state and limit the roll to 2 dice unless a specific <strong>Trait</strong> or <strong>Ability</strong> says otherwise.</p>
+<h2 id="combat">Combat</h2>
+<p><strong>Combat</strong> is split into <strong>Rounds</strong>, and each round contains <strong>Turns</strong> for participating <strong>Characters</strong>.</p>
+<h3 id="initiative">Initiative</h3>
+<p>Before <strong>Combat</strong>, all participants roll initiative using <strong>Agility</strong>. This determines turn order. On a tie, tied characters reroll between themselves, or act in an order agreed by the players or decided by the <strong>Game Master</strong>.</p>
+<h3 id="turns">Turns</h3>
+<p>Combat is divided into <strong>Turns</strong>, each belonging to one <strong>Character</strong>. Characters can delay their turn to the end of the round. Allied <strong>Characters</strong> whose turns are consecutive can act together.</p>
+<p>Each <strong>Turn</strong> lasts roughly 6 seconds in the game world.</p>
+<p>If players think for too long, the GM can push them narratively or use a real time limit. A good option is &quot;hesitation&quot;: if a player cannot decide for too long, the character hesitates and loses the turn. This should also apply to the <strong>Game Master</strong>.</p>
+<h3 id="zones">Zones</h3>
+<p>Combat space is divided into zones. A <strong>Character</strong> can move freely within their current zone. Moving beyond it costs movement.</p>
+<p>Usually, a field can be divided into 1-meter cells and characters have 5 meters of movement, meaning 5 cells per turn. This is only an example. Movement systems can change with the setting and scene.</p>
+<h3 id="actions">Actions</h3>
+<p>By default, a <strong>Character</strong> can take 1 <strong>Action</strong> and 1 <strong>Bonus Action</strong> per turn, not counting movement. <strong>Traits</strong> and <strong>Abilities</strong> can change this.</p>
+<p>Actions must fit within the turn and be possible in the situation. Example actions:</p>
+<ol><li><strong>Attack</strong><br>Damage, push, wound, or otherwise harm an enemy.</li><li><strong>Study / Analyze</strong><br>Gain useful information about space, characters, items, and so on.</li><li><strong>Influence</strong><br>Affect another <strong>Character's</strong> behavior without a physical attack.</li><li><strong>Search</strong><br>Find hidden things.</li><li><strong>Resist</strong><br>Try to remove an <strong>Effect</strong> or resist its influence.</li><li><strong>Prepare</strong><br>Prepare a larger action for the next turn. This can also grant <strong>Advantage</strong>, such as aiming.</li><li><strong>Team Action</strong><br>Combine your <strong>Turn</strong> with another <strong>Character's Turn</strong>. Enemy turns must not separate the two turns.</li><li><strong>Interact</strong><br>Any action not listed above.</li></ol>
+<p>If an action can be done in a brief moment, it can be done as a <strong>Bonus Action</strong>.</p>
+<h3 id="reactions">Reactions</h3>
+<p>On another character's turn, a <strong>Character</strong> can only make <strong>Reactions</strong>: defend against area attacks, resist <strong>Effects</strong>, or respond to interaction with them or their immediate surroundings.</p>
+<p>A <strong>Reaction</strong> must fit the same limits as a <strong>Bonus Action</strong>. By default, a <strong>Character</strong> can make 1 <strong>Reaction</strong> per <strong>Round</strong>. The <strong>Game Master</strong> decides what can be done as a reaction, while players can argue why a reaction should be possible.</p>
+<h2 id="rest">Rest</h2>
+<p>During a game or campaign, <strong>Players</strong> need rests. <strong>Short Rests</strong> are usually started by players, while <strong>Long Rests</strong> usually happen between sessions.</p>
+<h3 id="short-rest">Short Rest</h3>
+<p>During a <strong>Short Rest</strong>, <strong>Resources</strong> recover partially depending on the time spent resting, up to half of their maximum values.</p>
+<h3 id="long-rest">Long Rest</h3>
+<p>During a <strong>Long Rest</strong>, all <strong>Resources</strong> recover, and all <strong>Effects</strong> and <strong>Exhaustion</strong> are cleared unless stated otherwise. Long rests usually happen automatically between sessions.</p>
+      </article>
+    </main>
+    <aside class="toc" aria-label="On this page">
+      <a class="toc-link level-2" href="#game-master-and-player">Game Master and Player</a><a class="toc-link level-2" href="#ranks">Ranks</a><a class="toc-link level-2" href="#character">Character</a><a class="toc-link level-3" href="#characteristics">Characteristics</a><a class="toc-link level-3" href="#character-rank">Character Rank</a><a class="toc-link level-3" href="#stats">Stats</a><a class="toc-link level-3" href="#death">Death</a><a class="toc-link level-3" href="#traits">Traits</a><a class="toc-link level-3" href="#abilities">Abilities</a><a class="toc-link level-3" href="#effects">Effects</a><a class="toc-link level-3" href="#inventory">Inventory</a><a class="toc-link level-3" href="#items-and-weapons">Items and Weapons</a><a class="toc-link level-3" href="#inspiration">Inspiration</a><a class="toc-link level-2" href="#conflict">Conflict</a><a class="toc-link level-3" href="#difficulty">Difficulty</a><a class="toc-link level-3" href="#check">Check</a><a class="toc-link level-3" href="#critical-success-and-failure">Critical Success and Failure</a><a class="toc-link level-3" href="#advantages-and-disadvantages">Advantages and Disadvantages</a><a class="toc-link level-2" href="#combat">Combat</a><a class="toc-link level-3" href="#initiative">Initiative</a><a class="toc-link level-3" href="#turns">Turns</a><a class="toc-link level-3" href="#zones">Zones</a><a class="toc-link level-3" href="#actions">Actions</a><a class="toc-link level-3" href="#reactions">Reactions</a><a class="toc-link level-2" href="#rest">Rest</a><a class="toc-link level-3" href="#short-rest">Short Rest</a><a class="toc-link level-3" href="#long-rest">Long Rest</a>
+    </aside>
+  </div>
+</body>
+</html>

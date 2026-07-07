@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "build:site": "node scripts/build-site.js"
+  }
+}
