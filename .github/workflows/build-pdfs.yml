@@ -12,27 +12,44 @@ permissions:
 jobs:
   build-pdfs:
     runs-on: ubuntu-latest
-    container:
-      image: pandoc/latex:latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install PDF tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            pandoc \
+            texlive-xetex \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            fonts-dejavu \
+            fonts-noto-core
+
       - name: Build PDFs
         run: |
           mkdir -p dist
           pandoc rules.en.md \
-            --from markdown-yaml_metadata_block \
+            --standalone \
+            --from gfm-yaml_metadata_block+tex_math_dollars \
             --pdf-engine=xelatex \
             --metadata title="Nimora Rules" \
-            --toc \
+            --variable mainfont="DejaVu Serif" \
+            --variable sansfont="DejaVu Sans" \
+            --variable monofont="DejaVu Sans Mono" \
+            --variable geometry:margin=20mm \
             --output dist/Nimora_en.pdf
           pandoc rules.ru.md \
-            --from markdown-yaml_metadata_block \
+            --standalone \
+            --from gfm-yaml_metadata_block+tex_math_dollars \
             --pdf-engine=xelatex \
             --metadata title="Правила Nimora" \
-            --toc \
+            --variable mainfont="DejaVu Serif" \
+            --variable sansfont="DejaVu Sans" \
+            --variable monofont="DejaVu Sans Mono" \
+            --variable geometry:margin=20mm \
             --output dist/Nimora_ru.pdf
 
       - name: Upload PDFs
