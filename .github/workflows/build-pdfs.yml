@@ -2,9 +2,8 @@ name: Build rule PDFs
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
+    tags:
+      - "v*"
   workflow_dispatch:
 
 jobs:
@@ -21,13 +20,13 @@ jobs:
         run: |
           mkdir -p dist
           pandoc rules.en.md \
-            --from markdown \
+            --from markdown-yaml_metadata_block \
             --pdf-engine=xelatex \
             --metadata title="Nimora Rules" \
             --toc \
             --output dist/Nimora_en.pdf
           pandoc rules.ru.md \
-            --from markdown \
+            --from markdown-yaml_metadata_block \
             --pdf-engine=xelatex \
             --metadata title="Правила Nimora" \
             --toc \
@@ -38,3 +37,9 @@ jobs:
         with:
           name: nimora-rules-pdf
           path: dist/*.pdf
+
+      - name: Upload PDFs to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.pdf
