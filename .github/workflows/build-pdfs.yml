@@ -1,0 +1,40 @@
+name: Build rule PDFs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-pdfs:
+    runs-on: ubuntu-latest
+    container:
+      image: pandoc/latex:latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build PDFs
+        run: |
+          mkdir -p dist
+          pandoc rules.en.md \
+            --from markdown \
+            --pdf-engine=xelatex \
+            --metadata title="Nimora Rules" \
+            --toc \
+            --output dist/Nimora_en.pdf
+          pandoc rules.ru.md \
+            --from markdown \
+            --pdf-engine=xelatex \
+            --metadata title="Правила Nimora" \
+            --toc \
+            --output dist/Nimora_ru.pdf
+
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: nimora-rules-pdf
+          path: dist/*.pdf
