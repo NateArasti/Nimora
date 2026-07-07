@@ -1,20 +1,20 @@
 # Nimora
-**Nimora** is a flexible tabletop role-playing game system focused on creative problem solving, character-driven play, and fast rulings over strict rules coverage.
-It uses a simple d20 core, ranked character traits, flexible abilities, scalable items, exhaustion, and broad GM guidance for scenes, damage, and balance. The system is made for home games first, but the rules are being prepared for public use on GitHub.
+
+**Nimora** is a flexible tabletop role-playing system focused on creative problem-solving, character-centered gameplay, and quick decision-making, rather than strict adherence to rules.
+It uses a simple d20-based system, ranked character traits, flexible abilities, scalable items, an exhaustion system, and extensive guidelines for the Game Master.
+
 ## Rules
-- [English rules](rules.en.md)
-- [Russian rules](rules.ru.md)
-## Current Contents
-- Core rules for characters, ranks, checks, conflict, combat, rest, and progression.
-- Rank-based HP with variable Health Dice.
-- Item and weapon ranks.
-- Simple damage guidance for GMs.
-- Scene-building and improvisation advice.
-- Printable/browser character sheet: [CharacterSheet.html](CharacterSheet.html)
-## Design Goals
-- Keep mechanics easy to adapt.
-- Let players solve problems creatively instead of choosing only from fixed actions.
-- Use numbers to support the story, not replace judgment.
-- Give the GM enough structure without forcing heavy math.
+
+- [Rules in English](rules.en.md)
+- [Rules in Russian](rules.ru.md)
+
+## Development Goals
+
+- Encourage players to solve problems creatively, rather than repeating the same patterns from game to game.
+- Make the mechanics easily adaptable to a wide variety of settings.
+- Reduce the impact of numbers on the pace of the game.
+- Provide the game master with ample room for creativity and storytelling.
+
 ## Status
-The system was mainly created for learning purposes and for playing with friends. None the less, the system is still playable and I hope it will help someone to have a great time.
+
+The system was created primarily for teaching and playing with friends. However, it’s still playable, and I hope it helps someone have a great time.
