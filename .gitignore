@@ -1,0 +1,15 @@
+.obsidian/
+.trash/
+.agents/
+.codex/
+
+# Local OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+~$*
