@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { renderCharacterSheetPage, labels: sheetLabels } = require("./character-sheet");
 
 const root = path.resolve(__dirname, "..");
 const outDir = path.join(root, "docs");
@@ -323,12 +324,17 @@ function renderPage(locale, page, pageIndex, pages, allLocales) {
   const parsed = parseBlocks(page.lines);
 
   const sidebar = pages
+    .filter((item) => item.type !== "character-sheet")
     .map((item) => {
       const active = item.slug === page.slug ? " active" : "";
       const href = `${item.slug}.html`;
       return `<a class="nav-link${active}" href="${href}">${escapeHtml(item.title)}</a>`;
     })
     .join("");
+
+  const toolsSection = page.source === "readme" && page.slug === "index"
+    ? renderToolsSection(locale)
+    : "";
 
   const pageToc = parsed.headings
     .filter((heading) => heading.level > 1 && heading.level <= 3)
@@ -345,6 +351,7 @@ function renderPage(locale, page, pageIndex, pages, allLocales) {
       return `<a class="locale-tab${active}" href="../${item.code}/${targetPage.slug}.html">${escapeHtml(item.languageLabel)}</a>`;
     })
     .join("");
+  const sheetLabel = sheetLabels[locale.code]?.title || "Character Sheet";
 
   return `<!doctype html>
 <html lang="${locale.code}">
@@ -360,9 +367,12 @@ function renderPage(locale, page, pageIndex, pages, allLocales) {
       <span class="brand-mark"></span>
       <span>Nimora</span>
     </a>
-    <nav class="locale-tabs" aria-label="Language">
-      ${localeTabs}
-    </nav>
+    <div class="top-actions">
+      <a class="top-tool-link" href="character-sheet.html">${escapeHtml(sheetLabel)}</a>
+      <nav class="locale-tabs" aria-label="Language">
+        ${localeTabs}
+      </nav>
+    </div>
   </header>
   <div class="layout">
     <aside class="sidebar">
@@ -372,6 +382,7 @@ function renderPage(locale, page, pageIndex, pages, allLocales) {
     <main class="content">
       <article class="doc">
 ${parsed.html}
+${toolsSection}
       </article>
     </main>
     <aside class="toc" aria-label="On this page">
@@ -380,6 +391,21 @@ ${parsed.html}
   </div>
 </body>
 </html>`;
+}
+
+function renderToolsSection(locale) {
+  const isRu = locale.code === "ru";
+  return `
+<section class="tool-section" aria-labelledby="tools-title">
+  <h2 id="tools-title">${isRu ? "Инструменты" : "Tools"}</h2>
+  <a class="tool-card" href="character-sheet.html">
+    <span class="tool-card-mark"></span>
+    <span>
+      <strong>${escapeHtml(sheetLabels[locale.code].title)}</strong>
+      <small>${isRu ? "Печатный локальный лист с автосохранением и настройками оформления." : "Printable local sheet with autosave and visual presets."}</small>
+    </span>
+  </a>
+</section>`;
 }
 
 function writeFile(file, contents) {
@@ -405,6 +431,14 @@ const builtLocales = locales.map((locale) => {
     pages: [
       ...splitPages(readme, { source: "readme", firstSlug: "index" }),
       ...splitPages(rules, { source: "rules", excludeTitles: ["Overview", "Описание"] }),
+      {
+        title: sheetLabels[locale.code].title,
+        lines: [],
+        source: "tool",
+        key: "tool:character-sheet",
+        slug: "character-sheet",
+        type: "character-sheet",
+      },
     ],
   };
 });
@@ -413,7 +447,10 @@ for (const locale of builtLocales) {
   for (const page of locale.pages) {
     const pageIndex = locale.pages.indexOf(page);
     const filename = `${page.slug}.html`;
-    writeFile(path.join(outDir, locale.code, filename), renderPage(locale, page, pageIndex, locale.pages, builtLocales));
+    const html = page.type === "character-sheet"
+      ? renderCharacterSheetPage({ locale, page, pageIndex, pages: locale.pages, allLocales: builtLocales })
+      : renderPage(locale, page, pageIndex, locale.pages, builtLocales);
+    writeFile(path.join(outDir, locale.code, filename), html);
   }
 }
 

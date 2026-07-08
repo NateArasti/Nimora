@@ -106,6 +106,25 @@ a:hover {
   border: 1px solid rgba(139, 212, 255, 0.55);
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-tool-link {
+  padding: 7px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  background: rgba(180, 102, 255, 0.12);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.top-tool-link:hover {
+  border-color: var(--accent);
+}
+
 .locale-tabs {
   display: flex;
   align-items: center;
@@ -354,6 +373,48 @@ a:hover {
   color: #f0d9ff;
   font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   font-size: 0.92em;
+}
+
+.tool-section {
+  margin-top: 44px;
+}
+
+.tool-card {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(180, 102, 255, 0.16), transparent 52%),
+    rgba(18, 9, 28, 0.84);
+  color: var(--text);
+}
+
+.tool-card:hover {
+  border-color: var(--accent);
+}
+
+.tool-card strong,
+.tool-card small {
+  display: block;
+}
+
+.tool-card small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+
+.tool-card-mark {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--accent-strong);
+  background:
+    linear-gradient(135deg, transparent 43%, rgba(224, 189, 255, 0.75) 46%, rgba(224, 189, 255, 0.75) 54%, transparent 57%),
+    rgba(65, 27, 91, 0.75);
+  transform: rotate(45deg);
 }
 
 .table-wrap {
