@@ -60,14 +60,10 @@ function stripManualToc(markdown) {
   const lines = markdown.replace(/\r\n/g, "\n").split("\n");
   const firstHeading = lines.findIndex((line) => /^#\s+/.test(line));
 
-  if (firstHeading !== 0) {
-    return markdown;
-  }
+  if (firstHeading !== 0) return markdown;
 
   const title = lines[0].replace(/^#\s+/, "").trim().toLowerCase();
-  if (title !== "table of contents" && title !== "содержание") {
-    return markdown;
-  }
+  if (title !== "table of contents" && title !== "содержание") return markdown;
 
   const separator = lines.findIndex((line, index) => index > 0 && /^-{3,}\s*$/.test(line));
   return separator === -1 ? lines.slice(1).join("\n") : lines.slice(separator + 1).join("\n");
@@ -95,9 +91,7 @@ function stripSections(markdown, titles) {
       }
     }
 
-    if (skippingLevel === null) {
-      result.push(line);
-    }
+    if (skippingLevel === null) result.push(line);
   }
 
   return result.join("\n");
@@ -112,9 +106,7 @@ function splitPages(markdown, options = {}) {
     const line = lines[index];
     const match = line.match(/^#\s+(.+)$/);
     if (match) {
-      if (current) {
-        pages.push(current);
-      }
+      if (current) pages.push(current);
       current = {
         title: match[1].trim(),
         lines: [line],
@@ -130,9 +122,7 @@ function splitPages(markdown, options = {}) {
     }
   }
 
-  if (current) {
-    pages.push(current);
-  }
+  if (current) pages.push(current);
 
   const used = new Set();
   return pages
@@ -146,19 +136,13 @@ function splitPages(markdown, options = {}) {
 }
 
 function normalizeHref(href) {
-  if (href === "rules.en.md") {
-    return "../en/important-note.html";
-  }
-  if (href === "rules.ru.md") {
-    return "../ru/важное-замечание.html";
-  }
-  if (href === "README.md") {
-    return "../en/index.html";
-  }
-  if (href === "README.ru.md") {
-    return "../ru/index.html";
-  }
-  return href;
+  const targets = {
+    "rules.en.md": "app:en:rules:important-note",
+    "rules.ru.md": "app:ru:rules:важное-замечание",
+    "README.md": "app:en:readme:index",
+    "README.ru.md": "app:ru:readme:index",
+  };
+  return targets[href] || href;
 }
 
 function inlineMarkdown(text) {
@@ -210,9 +194,7 @@ function parseBlocks(lines, baseLevel = 1) {
     while (index < lines.length) {
       const line = lines[index];
       const match = line.match(/^(\s*)(?:[-*]|\d+\.)\s+(.+)$/);
-      if (!match || match[1].length < indent) {
-        break;
-      }
+      if (!match || match[1].length < indent) break;
       if (match[1].length > indent) {
         const nested = readList(match[1].length);
         items[items.length - 1] = items[items.length - 1].replace(/<\/li>$/, `${nested}</li>`);
@@ -228,16 +210,10 @@ function parseBlocks(lines, baseLevel = 1) {
           index += 1;
           break;
         }
-        if (/^(\s*)(?:[-*]|\d+\.)\s+/.test(next) || /^#{1,6}\s+/.test(next)) {
-          break;
-        }
+        if (/^(\s*)(?:[-*]|\d+\.)\s+/.test(next) || /^#{1,6}\s+/.test(next)) break;
         if (next.startsWith(" ".repeat(indent + 2))) {
           const trimmed = next.trim();
-          if (trimmed.startsWith(">")) {
-            itemLines.push(`<span class="list-quote">${inlineMarkdown(trimmed.replace(/^>\s?/, ""))}</span>`);
-          } else {
-            itemLines.push(inlineMarkdown(trimmed));
-          }
+          itemLines.push(trimmed.startsWith(">") ? `<span class="list-quote">${inlineMarkdown(trimmed.replace(/^>\s?/, ""))}</span>` : inlineMarkdown(trimmed));
           index += 1;
           continue;
         }
@@ -320,92 +296,410 @@ function parseBlocks(lines, baseLevel = 1) {
   return { html: html.join("\n"), headings };
 }
 
-function renderPage(locale, page, pageIndex, pages, allLocales) {
-  const parsed = parseBlocks(page.lines);
-
-  const sidebar = pages
-    .filter((item) => item.type !== "character-sheet")
-    .map((item) => {
-      const active = item.slug === page.slug ? " active" : "";
-      const href = `${item.slug}.html`;
-      return `<a class="nav-link${active}" href="${href}">${escapeHtml(item.title)}</a>`;
-    })
-    .join("");
-
-  const toolsSection = page.source === "readme" && page.slug === "index"
-    ? renderToolsSection(locale)
-    : "";
-
-  const pageToc = parsed.headings
-    .filter((heading) => heading.level > 1 && heading.level <= 3)
-    .map((heading) => `<a class="toc-link level-${heading.level}" href="#${heading.id}">${escapeHtml(heading.text)}</a>`)
-    .join("");
-
-  const localeTabs = allLocales
-    .map((item) => {
-      const targetPage =
-        item.pages.find((candidate) => candidate.key === page.key) ||
-        item.pages[pageIndex] ||
-        item.pages[0];
-      const active = item.code === locale.code ? " active" : "";
-      return `<a class="locale-tab${active}" href="../${item.code}/${targetPage.slug}.html">${escapeHtml(item.languageLabel)}</a>`;
-    })
-    .join("");
-  const sheetLabel = sheetLabels[locale.code]?.title || "Character Sheet";
-
-  return `<!doctype html>
-<html lang="${locale.code}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(page.title)} | ${escapeHtml(locale.title)}</title>
-  <link rel="stylesheet" href="../assets/styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="index.html" aria-label="${escapeHtml(locale.title)}">
-      <span class="brand-mark"></span>
-      <span>Nimora</span>
-    </a>
-    <div class="top-actions">
-      <a class="top-tool-link" href="character-sheet.html">${escapeHtml(sheetLabel)}</a>
-      <nav class="locale-tabs" aria-label="Language">
-        ${localeTabs}
-      </nav>
-    </div>
-  </header>
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="sidebar-title">${escapeHtml(locale.homeLabel)}</div>
-      <nav>${sidebar}</nav>
-    </aside>
-    <main class="content">
-      <article class="doc">
-${parsed.html}
-${toolsSection}
-      </article>
-    </main>
-    <aside class="toc" aria-label="On this page">
-      ${pageToc}
-    </aside>
-  </div>
-</body>
-</html>`;
-}
-
 function renderToolsSection(locale) {
   const isRu = locale.code === "ru";
   return `
 <section class="tool-section" aria-labelledby="tools-title">
   <h2 id="tools-title">${isRu ? "Инструменты" : "Tools"}</h2>
-  <a class="tool-card" href="character-sheet.html">
+  <button class="tool-card" type="button" data-page-key="tool:character-sheet">
     <span class="tool-card-mark"></span>
     <span>
       <strong>${escapeHtml(sheetLabels[locale.code].title)}</strong>
       <small>${isRu ? "Печатный локальный лист с автосохранением и настройками оформления." : "Printable local sheet with autosave and visual presets."}</small>
     </span>
-  </a>
+  </button>
 </section>`;
+}
+
+function extractBetween(source, startPattern, endPattern) {
+  const start = source.search(startPattern);
+  if (start === -1) return "";
+  const startMatch = source.slice(start).match(startPattern);
+  const contentStart = start + startMatch[0].length;
+  const end = source.slice(contentStart).search(endPattern);
+  return end === -1 ? "" : source.slice(contentStart, contentStart + end);
+}
+
+function extractSheet(pageHtml) {
+  return {
+    style: extractBetween(pageHtml, /<style>\s*/, /\s*<\/style>/),
+    html: pageHtml.match(/<main class="sheet-shell">[\s\S]*?<\/main>/)?.[0] || "",
+  };
+}
+
+function buildData() {
+  const builtLocales = locales.map((locale) => {
+    const readmeFile = fs.existsSync(path.join(root, locale.readmeSource)) ? locale.readmeSource : "README.md";
+    const readme = stripSections(fs.readFileSync(path.join(root, readmeFile), "utf8"), ["Rules", "Правила"]);
+    const rules = fs.readFileSync(path.join(root, locale.source), "utf8");
+    return {
+      ...locale,
+      pages: [
+        ...splitPages(readme, { source: "readme", firstSlug: "index" }),
+        ...splitPages(rules, { source: "rules", excludeTitles: ["Overview", "Описание"] }),
+        {
+          title: sheetLabels[locale.code].title,
+          lines: [],
+          source: "tool",
+          key: "tool:character-sheet",
+          slug: "character-sheet",
+          type: "character-sheet",
+        },
+      ],
+    };
+  });
+
+  const sheets = {};
+  let sheetStyle = "";
+
+  for (const locale of builtLocales) {
+    locale.pages = locale.pages.map((page) => {
+      if (page.type === "character-sheet") {
+        const html = renderCharacterSheetPage({ locale, page, allLocales: builtLocales });
+        const sheet = extractSheet(html);
+        sheetStyle = sheetStyle || sheet.style;
+        sheets[locale.code] = {
+          html: sheet.html,
+          labels: sheetLabels[locale.code],
+        };
+        return {
+          title: page.title,
+          source: page.source,
+          key: page.key,
+          slug: page.slug,
+          type: page.type,
+        };
+      }
+
+      const parsed = parseBlocks(page.lines);
+      return {
+        title: page.title,
+        source: page.source,
+        key: page.key,
+        slug: page.slug,
+        type: "doc",
+        html: parsed.html + (page.source === "readme" && page.slug === "index" ? renderToolsSection(locale) : ""),
+        headings: parsed.headings.filter((heading) => heading.level > 1 && heading.level <= 3),
+      };
+    });
+  }
+
+  return { locales: builtLocales, sheets, sheetStyle };
+}
+
+function renderIndex(data) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nimora</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <style>${data.sheetStyle}</style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" type="button" data-brand>
+      <span class="brand-mark"></span>
+      <span>Nimora</span>
+    </button>
+    <div class="top-actions">
+      <button class="top-tool-link" type="button" data-page-key="tool:character-sheet"></button>
+      <nav class="locale-tabs" aria-label="Language"></nav>
+    </div>
+  </header>
+  <div class="layout" data-layout>
+    <aside class="sidebar">
+      <div class="sidebar-title"></div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+    <main class="content" id="content" tabindex="-1"></main>
+    <aside class="toc" aria-label="On this page"></aside>
+  </div>
+  <script>window.NIMORA_DATA = ${JSON.stringify({
+    locales: data.locales.map((locale) => ({
+      code: locale.code,
+      title: locale.title,
+      languageLabel: locale.languageLabel,
+      homeLabel: locale.homeLabel,
+      pages: locale.pages,
+    })),
+    sheets: data.sheets,
+  })};</script>
+  <script src="assets/app.js"></script>
+</body>
+</html>`;
+}
+
+function renderAppScript() {
+  return `"use strict";
+
+(() => {
+  const data = window.NIMORA_DATA;
+  const storageKey = "nimora-site-state";
+  const root = document.documentElement;
+  const content = document.querySelector("#content");
+  const layout = document.querySelector("[data-layout]");
+  const sidebarTitle = document.querySelector(".sidebar-title");
+  const sidebarNav = document.querySelector(".sidebar-nav");
+  const toc = document.querySelector(".toc");
+  const localeTabs = document.querySelector(".locale-tabs");
+  const toolLink = document.querySelector(".top-tool-link");
+  const brand = document.querySelector("[data-brand]");
+  let sheetInitialized = false;
+
+  const saved = readState();
+  let localeCode = data.locales.some((locale) => locale.code === saved.locale) ? saved.locale : data.locales[0].code;
+  let pageKey = saved.pageKey || currentLocale().pages[0].key;
+
+  function readState() {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveState() {
+    localStorage.setItem(storageKey, JSON.stringify({ locale: localeCode, pageKey }));
+  }
+
+  function currentLocale() {
+    return data.locales.find((locale) => locale.code === localeCode) || data.locales[0];
+  }
+
+  function currentPage() {
+    const locale = currentLocale();
+    return locale.pages.find((page) => page.key === pageKey) || locale.pages[0];
+  }
+
+  function setPage(nextKey, nextLocale = localeCode) {
+    localeCode = nextLocale;
+    const locale = currentLocale();
+    pageKey = locale.pages.some((page) => page.key === nextKey) ? nextKey : locale.pages[0].key;
+    saveState();
+    render();
+  }
+
+  function button(className, text, active, attrs = "") {
+    return \`<button class="\${className}\${active ? " active" : ""}" type="button" \${attrs}>\${escapeHtml(text)}</button>\`;
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderShell(locale, page) {
+    document.title = \`\${page.title} | \${locale.title}\`;
+    root.lang = locale.code;
+    sidebarTitle.textContent = locale.homeLabel;
+    toolLink.textContent = data.sheets[locale.code].labels.title;
+    toolLink.classList.toggle("active", page.type === "character-sheet");
+
+    const pageIndex = locale.pages.findIndex((item) => item.key === page.key);
+    localeTabs.innerHTML = data.locales
+      .map((item) => {
+        const target = item.pages.find((candidate) => candidate.key === page.key) || item.pages[pageIndex] || item.pages[0];
+        const disabled = item.code === locale.code ? " disabled" : "";
+        return button("locale-tab", item.languageLabel, item.code === locale.code, \`data-locale="\${item.code}" data-page-key="\${target.key}"\${disabled}\`);
+      })
+      .join("");
+
+    sidebarNav.innerHTML = locale.pages
+      .filter((item) => item.type !== "character-sheet")
+      .map((item) => button("nav-link", item.title, item.key === page.key, \`data-page-key="\${item.key}"\`))
+      .join("");
+  }
+
+  function renderDoc(page) {
+    layout.classList.remove("sheet-mode");
+    content.innerHTML = \`<article class="doc">\${page.html}</article>\`;
+    toc.innerHTML = (page.headings || [])
+      .map((heading) => \`<button class="toc-link level-\${heading.level}" type="button" data-heading="\${heading.id}">\${escapeHtml(heading.text)}</button>\`)
+      .join("");
+    sheetInitialized = false;
+  }
+
+  function renderSheet(locale) {
+    layout.classList.add("sheet-mode");
+    sheetInitialized = false;
+    content.innerHTML = data.sheets[locale.code].html;
+    toc.innerHTML = "";
+    initCharacterSheet(locale.code, data.sheets[locale.code].labels);
+  }
+
+  function swapContent(update) {
+    content.classList.remove("content-enter");
+    update();
+    requestAnimationFrame(() => content.classList.add("content-enter"));
+  }
+
+  function render() {
+    const locale = currentLocale();
+    const page = currentPage();
+    renderShell(locale, page);
+    swapContent(() => {
+      if (page.type === "character-sheet") renderSheet(locale);
+      else renderDoc(page);
+    });
+  }
+
+  function initCharacterSheet(locale, labels) {
+    if (sheetInitialized) return;
+    sheetInitialized = true;
+
+    const sheet = document.getElementById("sheet");
+    if (!sheet) return;
+
+    const characterStorageKey = \`nimora-character-sheet-\${locale}\`;
+    const portraitBox = document.getElementById("portrait-box");
+    const portraitInput = document.getElementById("portrait-input");
+    const portraitImg = document.getElementById("portrait-img");
+    const portraitHint = document.getElementById("portrait-hint");
+    const clearButton = document.getElementById("clear-sheet");
+    const minFontSize = 8;
+    const minLineHeight = 8;
+
+    function fields() {
+      return [...sheet.querySelectorAll("input:not([type=file]), textarea")];
+    }
+
+    function fitTextarea(textarea) {
+      if (!textarea.dataset.baseFontSize) {
+        textarea.dataset.baseFontSize = String(Number.parseFloat(getComputedStyle(textarea).fontSize) || 13);
+      }
+      if (!textarea.dataset.baseLineHeight) {
+        const lineHeight = Number.parseFloat(getComputedStyle(textarea).lineHeight);
+        textarea.dataset.baseLineHeight = String(Number.isFinite(lineHeight) ? lineHeight : Number(textarea.dataset.baseFontSize) * 1.25);
+      }
+      const baseSize = Number.parseFloat(textarea.dataset.baseFontSize);
+      const baseLineHeight = Number.parseFloat(textarea.dataset.baseLineHeight);
+      let size = baseSize;
+      let lineHeight = baseLineHeight;
+      textarea.style.overflowY = "hidden";
+      textarea.style.fontSize = size + "px";
+      textarea.style.lineHeight = lineHeight + "px";
+      while (textarea.scrollHeight > textarea.clientHeight + 1 && size > minFontSize) {
+        size -= 0.5;
+        lineHeight = Math.max(minLineHeight, baseLineHeight * (size / baseSize));
+        textarea.style.fontSize = size + "px";
+        textarea.style.lineHeight = lineHeight + "px";
+      }
+      while (textarea.scrollHeight > textarea.clientHeight + 1 && lineHeight > minLineHeight) {
+        lineHeight -= 0.5;
+        textarea.style.lineHeight = lineHeight + "px";
+      }
+      textarea.style.overflowY = textarea.scrollHeight > textarea.clientHeight + 1 ? "auto" : "hidden";
+    }
+
+    function fitAllTextareas() {
+      requestAnimationFrame(() => {
+        sheet.querySelectorAll("textarea").forEach(fitTextarea);
+      });
+    }
+
+    function setPortrait(src) {
+      portraitImg.src = src;
+      portraitImg.style.display = "block";
+      portraitHint.style.display = "none";
+    }
+
+    function save() {
+      const values = {};
+      for (const field of fields()) {
+        values[field.name] = field.type === "checkbox" ? field.checked : field.value;
+      }
+      if (portraitImg.src && portraitImg.style.display !== "none") values.portrait = portraitImg.src;
+      localStorage.setItem(characterStorageKey, JSON.stringify(values));
+    }
+
+    function load() {
+      const raw = localStorage.getItem(characterStorageKey);
+      if (!raw) {
+        fitAllTextareas();
+        return;
+      }
+      const values = JSON.parse(raw);
+      for (const field of fields()) {
+        if (!Object.prototype.hasOwnProperty.call(values, field.name)) continue;
+        if (field.type === "checkbox") field.checked = Boolean(values[field.name]);
+        else field.value = values[field.name];
+      }
+      if (values.portrait) setPortrait(values.portrait);
+      fitAllTextareas();
+    }
+
+    portraitBox.addEventListener("click", () => portraitInput.click());
+    portraitBox.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        portraitInput.click();
+      }
+    });
+    portraitInput.addEventListener("change", (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPortrait(reader.result);
+        save();
+      };
+      reader.readAsDataURL(file);
+    });
+    sheet.addEventListener("input", (event) => {
+      if (event.target.matches("textarea")) requestAnimationFrame(() => fitTextarea(event.target));
+      save();
+    });
+    clearButton.addEventListener("click", () => {
+      if (!confirm(labels.clearConfirm)) return;
+      localStorage.removeItem(characterStorageKey);
+      sheet.reset();
+      portraitImg.removeAttribute("src");
+      portraitImg.style.display = "none";
+      portraitHint.style.display = "block";
+      fitAllTextareas();
+    });
+    window.addEventListener("resize", fitAllTextareas);
+    load();
+    setTimeout(fitAllTextareas, 50);
+  }
+
+  document.addEventListener("click", (event) => {
+    const appLink = event.target.closest("a[href^='app:']");
+    if (appLink) {
+      event.preventDefault();
+      const [, nextLocale, source, slug] = appLink.getAttribute("href").split(":");
+      const locale = data.locales.find((item) => item.code === nextLocale) || currentLocale();
+      const target = locale.pages.find((page) => page.source === source && page.slug === slug) || locale.pages[0];
+      setPage(target.key, locale.code);
+      return;
+    }
+
+    const headingButton = event.target.closest("[data-heading]");
+    if (headingButton) {
+      const target = document.getElementById(headingButton.dataset.heading);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    const pageButton = event.target.closest("[data-page-key]");
+    if (pageButton) {
+      setPage(pageButton.dataset.pageKey, pageButton.dataset.locale || localeCode);
+      return;
+    }
+
+    if (event.target.closest("[data-brand]")) {
+      setPage(currentLocale().pages[0].key);
+    }
+  });
+
+  render();
+})();
+`;
 }
 
 function writeFile(file, contents) {
@@ -420,43 +714,8 @@ function copyFile(from, to) {
 
 fs.rmSync(outDir, { recursive: true, force: true });
 
-const builtLocales = locales.map((locale) => {
-  const readmeFile = fs.existsSync(path.join(root, locale.readmeSource))
-    ? locale.readmeSource
-    : "README.md";
-  const readme = stripSections(fs.readFileSync(path.join(root, readmeFile), "utf8"), ["Rules", "Правила"]);
-  const rules = fs.readFileSync(path.join(root, locale.source), "utf8");
-  return {
-    ...locale,
-    pages: [
-      ...splitPages(readme, { source: "readme", firstSlug: "index" }),
-      ...splitPages(rules, { source: "rules", excludeTitles: ["Overview", "Описание"] }),
-      {
-        title: sheetLabels[locale.code].title,
-        lines: [],
-        source: "tool",
-        key: "tool:character-sheet",
-        slug: "character-sheet",
-        type: "character-sheet",
-      },
-    ],
-  };
-});
-
-for (const locale of builtLocales) {
-  for (const page of locale.pages) {
-    const pageIndex = locale.pages.indexOf(page);
-    const filename = `${page.slug}.html`;
-    const html = page.type === "character-sheet"
-      ? renderCharacterSheetPage({ locale, page, pageIndex, pages: locale.pages, allLocales: builtLocales })
-      : renderPage(locale, page, pageIndex, locale.pages, builtLocales);
-    writeFile(path.join(outDir, locale.code, filename), html);
-  }
-}
-
-writeFile(
-  path.join(outDir, "index.html"),
-  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="refresh" content="0; url=en/index.html"><title>Nimora</title><link rel="canonical" href="en/index.html"></head><body><a href="en/index.html">Nimora Rules</a></body></html>`
-);
+const data = buildData();
+writeFile(path.join(outDir, "index.html"), renderIndex(data));
+writeFile(path.join(outDir, "assets", "app.js"), renderAppScript());
 writeFile(path.join(outDir, ".nojekyll"), "");
 copyFile(path.join(root, "site", "styles.css"), path.join(outDir, "assets", "styles.css"));

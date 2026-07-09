@@ -411,7 +411,7 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .left-top {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 0;
       min-height: 0;
     }
     .characteristics-grid {
@@ -433,6 +433,10 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       border: 1px solid var(--sheet-border-light);
       border-radius: 3px;
       background: rgba(255, 255, 255, 0.3);
+    }
+    .combat-stat {
+      border: 1.5px solid var(--sheet-border);
+      border-radius: var(--sheet-radius);
     }
     .stat-card {
       display: grid;
@@ -555,7 +559,7 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     }
     .left-top .exhaustion-block {
       flex: 1 1 auto;
-      margin-top: 0;
+      margin-top: 4px;
     }
     .exhaustion-score {
       display: grid;
