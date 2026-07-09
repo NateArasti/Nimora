@@ -122,16 +122,112 @@
     if (!sheet) return;
 
     const characterStorageKey = `nimora-character-sheet-${locale}`;
+    const customizationStorageKey = `nimora-character-sheet-customization-${locale}`;
+    const shell = document.querySelector(".sheet-shell");
     const portraitBox = document.getElementById("portrait-box");
     const portraitInput = document.getElementById("portrait-input");
     const portraitImg = document.getElementById("portrait-img");
     const portraitHint = document.getElementById("portrait-hint");
     const clearButton = document.getElementById("clear-sheet");
+    const customizeButton = document.getElementById("toggle-customize");
+    const customizePanel = document.getElementById("customize-panel");
+    const presetInput = document.getElementById("custom-preset");
+    const fontInput = document.getElementById("custom-font");
+    const resetStyleButton = document.getElementById("reset-style");
+    const resetLabelsButton = document.getElementById("reset-labels");
     const minFontSize = 8;
     const minLineHeight = 8;
+    const defaultStatLabels = {
+      body: labels.body,
+      agility: labels.agility,
+      mind: labels.mind,
+      intuition: labels.intuition,
+      will: labels.will,
+      influence: labels.influence,
+    };
+    const defaultFormula = labels.exhaustionFormula;
+    const presets = {
+      classic: { paper: "#f5efe0", screen: "#3a2a1a", accent: "#8b2020", heading: "#8b2020", border: "#a08060", gold: "#b8960c", ink: "#1a1410", texture: true },
+      steel: { paper: "#eef1f2", screen: "#202932", accent: "#2f5268", heading: "#2f5268", border: "#7b8992", gold: "#8a6f3a", ink: "#111820", texture: true },
+      forest: { paper: "#f0efd9", screen: "#243225", accent: "#426b3c", heading: "#426b3c", border: "#79885d", gold: "#a7873f", ink: "#172012", texture: true },
+      crimson: { paper: "#f7eadc", screen: "#321b1d", accent: "#9f1f2d", heading: "#9f1f2d", border: "#9a6f58", gold: "#c19a2e", ink: "#21100e", texture: true },
+      print: { paper: "#ffffff", screen: "#d8d8d8", accent: "#111111", heading: "#111111", border: "#666666", gold: "#444444", ink: "#000000", texture: false },
+    };
+    const fonts = {
+      georgia: "Georgia, \"Times New Roman\", serif",
+      merriweather: "\"Merriweather\", Georgia, serif",
+      alegreya: "\"Alegreya\", Georgia, serif",
+      lora: "\"Lora\", Georgia, serif",
+      cinzel: "\"Cinzel\", Georgia, serif",
+      inter: "\"Inter\", Arial, sans-serif",
+    };
 
     function fields() {
-      return [...sheet.querySelectorAll("input:not([type=file]), textarea")];
+      return [...sheet.querySelectorAll("input:not([type=file]):not([data-custom-field]), textarea:not([data-custom-field])")];
+    }
+
+    function defaultCustomization() {
+      return { style: { preset: "classic", font: "georgia", ...presets.classic }, labels: { ...defaultStatLabels } };
+    }
+
+    function readCustomization() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(customizationStorageKey)) || {};
+        const defaults = defaultCustomization();
+        const preset = presets[saved.style?.preset] ? saved.style.preset : defaults.style.preset;
+        return {
+          style: { ...defaults.style, ...saved.style, preset },
+          labels: { ...defaults.labels, ...saved.labels },
+        };
+      } catch {
+        return defaultCustomization();
+      }
+    }
+
+    function saveCustomization(customization) {
+      localStorage.setItem(customizationStorageKey, JSON.stringify(customization));
+    }
+
+    function applyCustomization(customization) {
+      const style = customization.style;
+      shell.style.setProperty("--sheet-paper", style.paper);
+      shell.style.setProperty("--sheet-paper-dark", style.paper);
+      shell.style.setProperty("--sheet-paper-mid", style.paper);
+      shell.style.setProperty("--sheet-screen-bg", style.screen);
+      shell.style.setProperty("--sheet-accent", style.accent);
+      shell.style.setProperty("--sheet-heading", style.heading);
+      shell.style.setProperty("--sheet-border", style.border);
+      shell.style.setProperty("--sheet-border-light", style.border);
+      shell.style.setProperty("--sheet-gold", style.gold);
+      shell.style.setProperty("--sheet-ink", style.ink);
+      shell.style.setProperty("--sheet-font-family", fonts[style.font] || fonts.georgia);
+      shell.style.setProperty("--sheet-texture", style.texture ? "var(--sheet-default-texture)" : "none");
+      presetInput.value = style.preset;
+      fontInput.value = style.font;
+      document.querySelectorAll("[data-style-field]").forEach((input) => {
+        input.value = style[input.dataset.styleField];
+      });
+      document.querySelectorAll("[data-stat-field]").forEach((input) => {
+        input.value = customization.labels[input.dataset.statField] || "";
+      });
+      document.querySelectorAll("[data-stat-label]").forEach((item) => {
+        item.textContent = customization.labels[item.dataset.statLabel] || defaultStatLabels[item.dataset.statLabel];
+      });
+      const formula = document.querySelector("[data-exhaustion-formula]");
+      if (formula) {
+        formula.textContent = defaultFormula
+          .replace(defaultStatLabels.body, customization.labels.body || defaultStatLabels.body)
+          .replace(defaultStatLabels.mind, customization.labels.mind || defaultStatLabels.mind)
+          .replace(defaultStatLabels.will, customization.labels.will || defaultStatLabels.will);
+      }
+      fitAllTextareas();
+    }
+
+    function updateCustomization(update) {
+      const customization = readCustomization();
+      update(customization);
+      saveCustomization(customization);
+      applyCustomization(customization);
     }
 
     function fitTextarea(textarea) {
@@ -199,6 +295,46 @@
       fitAllTextareas();
     }
 
+    customizeButton.addEventListener("click", () => {
+      const open = !customizePanel.classList.contains("open");
+      customizePanel.classList.toggle("open", open);
+      customizeButton.setAttribute("aria-expanded", String(open));
+    });
+    presetInput.addEventListener("change", () => {
+      updateCustomization((customization) => {
+        const preset = presetInput.value;
+        customization.style = { ...customization.style, ...presets[preset], preset };
+      });
+    });
+    fontInput.addEventListener("change", () => {
+      updateCustomization((customization) => {
+        customization.style.font = fontInput.value;
+      });
+    });
+    document.querySelectorAll("[data-style-field]").forEach((input) => {
+      input.addEventListener("input", () => {
+        updateCustomization((customization) => {
+          customization.style[input.dataset.styleField] = input.value;
+        });
+      });
+    });
+    document.querySelectorAll("[data-stat-field]").forEach((input) => {
+      input.addEventListener("input", () => {
+        updateCustomization((customization) => {
+          customization.labels[input.dataset.statField] = input.value.trim() || defaultStatLabels[input.dataset.statField];
+        });
+      });
+    });
+    resetStyleButton.addEventListener("click", () => {
+      updateCustomization((customization) => {
+        customization.style = defaultCustomization().style;
+      });
+    });
+    resetLabelsButton.addEventListener("click", () => {
+      updateCustomization((customization) => {
+        customization.labels = defaultCustomization().labels;
+      });
+    });
     portraitBox.addEventListener("click", () => portraitInput.click());
     portraitBox.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -230,6 +366,7 @@
       fitAllTextareas();
     });
     window.addEventListener("resize", fitAllTextareas);
+    applyCustomization(readCustomization());
     load();
     setTimeout(fitAllTextareas, 50);
   }
