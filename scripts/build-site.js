@@ -151,6 +151,11 @@ function inlineMarkdown(text) {
     code.push(`<code>${value}</code>`);
     return `\u0000CODE${code.length - 1}\u0000`;
   });
+  const math = [];
+  result = result.replace(/\$([^$\n]+)\$/g, (_, value) => {
+    math.push(`<code>${value.trim()}</code>`);
+    return `\u0000MATH${math.length - 1}\u0000`;
+  });
 
   result = result
     .replace(/\*\*\*([^*]+)\*\*\*/g, "<strong><em>$1</em></strong>")
@@ -158,7 +163,9 @@ function inlineMarkdown(text) {
     .replace(/\*([^*]+)\*/g, "<em>$1</em>")
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => `<a href="${escapeHtml(normalizeHref(href))}">${label}</a>`);
 
-  return result.replace(/\u0000CODE(\d+)\u0000/g, (_, index) => code[Number(index)]);
+  return result
+    .replace(/\u0000MATH(\d+)\u0000/g, (_, index) => math[Number(index)])
+    .replace(/\u0000CODE(\d+)\u0000/g, (_, index) => code[Number(index)]);
 }
 
 function parseTable(lines) {
@@ -180,15 +187,17 @@ function parseTable(lines) {
     .join("")}</tbody></table></div>`;
 }
 
-function parseBlocks(lines, baseLevel = 1) {
+function parseBlocks(lines, baseLevel = 1, options = {}) {
   const html = [];
   const headings = [];
   const usedHeadings = new Set();
   let index = 0;
 
   function readList(indent = 0) {
-    const ordered = /^\s*\d+\.\s+/.test(lines[index]);
+    const listStart = lines[index].match(/^\s*(\d+)\.\s+/);
+    const ordered = Boolean(listStart);
     const tag = ordered ? "ol" : "ul";
+    const attributes = ordered && listStart[1] !== "1" ? ` start="${escapeHtml(listStart[1])}"` : "";
     const items = [];
 
     while (index < lines.length) {
@@ -223,7 +232,7 @@ function parseBlocks(lines, baseLevel = 1) {
       items.push(`<li>${itemLines.join("<br>")}</li>`);
     }
 
-    return `<${tag}>${items.join("")}</${tag}>`;
+    return `<${tag}${attributes}>${items.join("")}</${tag}>`;
   }
 
   while (index < lines.length) {
@@ -237,6 +246,39 @@ function parseBlocks(lines, baseLevel = 1) {
     if (/^-{3,}\s*$/.test(line)) {
       html.push("<hr>");
       index += 1;
+      continue;
+    }
+
+    const fence = line.match(/^```(\w+)?\s*$/);
+    if (fence) {
+      const codeLines = [];
+      index += 1;
+      while (index < lines.length && !/^```\s*$/.test(lines[index])) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      if (index < lines.length) index += 1;
+      const language = fence[1] ? ` class="language-${escapeHtml(fence[1])}"` : "";
+      html.push(`<pre><code${language}>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+      continue;
+    }
+
+    const singleLineMath = line.match(/^\$\$\s*(.+?)\s*\$\$\s*$/);
+    if (singleLineMath) {
+      html.push(`<pre><code>${escapeHtml(singleLineMath[1].trim())}</code></pre>`);
+      index += 1;
+      continue;
+    }
+
+    if (/^\$\$\s*$/.test(line)) {
+      const codeLines = [];
+      index += 1;
+      while (index < lines.length && !/^\$\$\s*$/.test(lines[index])) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      if (index < lines.length) index += 1;
+      html.push(`<pre><code>${escapeHtml(codeLines.join("\n").trim())}</code></pre>`);
       continue;
     }
 
@@ -267,7 +309,7 @@ function parseBlocks(lines, baseLevel = 1) {
         quote.push(lines[index].replace(/^\s*>\s?/, ""));
         index += 1;
       }
-      html.push(`<blockquote>${parseBlocks(quote).html}</blockquote>`);
+      html.push(`<blockquote>${parseBlocks(quote, 1, { preserveLineBreaks: true }).html}</blockquote>`);
       continue;
     }
 
@@ -282,6 +324,8 @@ function parseBlocks(lines, baseLevel = 1) {
       index < lines.length &&
       lines[index].trim() &&
       !/^#{1,6}\s+/.test(lines[index]) &&
+      !/^```/.test(lines[index]) &&
+      !/^\$\$/.test(lines[index]) &&
       !/^\s*(?:[-*]|\d+\.)\s+/.test(lines[index]) &&
       !lines[index].trim().startsWith(">") &&
       !lines[index].trim().startsWith("|") &&
@@ -290,7 +334,10 @@ function parseBlocks(lines, baseLevel = 1) {
       paragraph.push(lines[index].trim());
       index += 1;
     }
-    html.push(`<p>${inlineMarkdown(paragraph.join(" "))}</p>`);
+    const paragraphHtml = options.preserveLineBreaks
+      ? paragraph.map((item) => inlineMarkdown(item)).join("<br>")
+      : inlineMarkdown(paragraph.join(" "));
+    html.push(`<p>${paragraphHtml}</p>`);
   }
 
   return { html: html.join("\n"), headings };
@@ -379,7 +426,7 @@ function buildData() {
         slug: page.slug,
         type: "doc",
         html: parsed.html + (page.source === "readme" && page.slug === "index" ? renderToolsSection(locale) : ""),
-        headings: parsed.headings.filter((heading) => heading.level > 1 && heading.level <= 3),
+        headings: parsed.headings.filter((heading) => heading.level > 1 && heading.level <= 4),
       };
     });
   }
