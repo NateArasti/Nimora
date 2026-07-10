@@ -2,7 +2,7 @@
 
 (() => {
   const data = window.NIMORA_DATA;
-  const storageKey = "nimora-site-state";
+  const storageKey = "nimora-site-state-" + data.site.buildId;
   const root = document.documentElement;
   const content = document.querySelector("#content");
   const layout = document.querySelector("[data-layout]");
@@ -16,6 +16,7 @@
   const brand = document.querySelector("[data-brand]");
   let sheetInitialized = false;
 
+  clearOldSiteState();
   const saved = readState();
   let localeCode = data.locales.some((locale) => locale.code === saved.locale) ? saved.locale : data.locales[0].code;
   let pageKey = saved.pageKey || currentLocale().pages[0].key;
@@ -25,6 +26,18 @@
       return JSON.parse(localStorage.getItem(storageKey)) || {};
     } catch {
       return {};
+    }
+  }
+
+  function clearOldSiteState() {
+    try {
+      for (const key of Object.keys(localStorage)) {
+        if (key === "nimora-site-state" || (key.startsWith("nimora-site-state-") && key !== storageKey)) {
+          localStorage.removeItem(key);
+        }
+      }
+    } catch {
+      // Keep the site usable when browser storage is unavailable.
     }
   }
 

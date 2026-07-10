@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { renderCharacterSheetPage, labels: sheetLabels } = require("./character-sheet");
 
 const root = path.resolve(__dirname, "..");
@@ -34,6 +35,25 @@ const site = {
     ru: { release: "Последний релиз", credit: "Создано" },
   },
 };
+
+function createBuildId() {
+  const hash = crypto.createHash("sha256");
+  const inputs = [
+    "README.md",
+    "README.ru.md",
+    "rules.en.md",
+    "rules.ru.md",
+    "scripts/build-site.js",
+    "scripts/character-sheet.js",
+    "site/styles.css",
+  ];
+
+  for (const input of inputs) {
+    hash.update(fs.readFileSync(path.join(root, input)));
+  }
+
+  return hash.digest("hex").slice(0, 12);
+}
 
 function escapeHtml(value) {
   return String(value)
@@ -440,7 +460,7 @@ function buildData() {
     });
   }
 
-  return { locales: builtLocales, sheets, sheetStyle, site };
+  return { locales: builtLocales, sheets, sheetStyle, site: { ...site, buildId: createBuildId() } };
 }
 
 function renderIndex(data) {
@@ -500,7 +520,7 @@ function renderAppScript() {
 
 (() => {
   const data = window.NIMORA_DATA;
-  const storageKey = "nimora-site-state";
+  const storageKey = "nimora-site-state-" + data.site.buildId;
   const root = document.documentElement;
   const content = document.querySelector("#content");
   const layout = document.querySelector("[data-layout]");
@@ -514,6 +534,7 @@ function renderAppScript() {
   const brand = document.querySelector("[data-brand]");
   let sheetInitialized = false;
 
+  clearOldSiteState();
   const saved = readState();
   let localeCode = data.locales.some((locale) => locale.code === saved.locale) ? saved.locale : data.locales[0].code;
   let pageKey = saved.pageKey || currentLocale().pages[0].key;
@@ -523,6 +544,18 @@ function renderAppScript() {
       return JSON.parse(localStorage.getItem(storageKey)) || {};
     } catch {
       return {};
+    }
+  }
+
+  function clearOldSiteState() {
+    try {
+      for (const key of Object.keys(localStorage)) {
+        if (key === "nimora-site-state" || (key.startsWith("nimora-site-state-") && key !== storageKey)) {
+          localStorage.removeItem(key);
+        }
+      }
+    } catch {
+      // Keep the site usable when browser storage is unavailable.
     }
   }
 
