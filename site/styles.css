@@ -26,6 +26,8 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   margin: 0;
   min-height: 100vh;
   background:
@@ -85,6 +87,14 @@ a:hover {
   letter-spacing: 0;
 }
 
+.brand small {
+  margin-left: 5px;
+  color: var(--muted);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .brand-mark {
   width: 22px;
   height: 22px;
@@ -117,6 +127,30 @@ a:hover {
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
   font-size: 14px;
+}
+
+.top-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 5px;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.top-link svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.top-link:hover {
+  color: var(--accent-strong);
 }
 
 .top-tool-link:hover,
@@ -159,6 +193,8 @@ a:hover {
   max-width: 1500px;
   margin: 0 auto;
   padding: 38px 30px 88px;
+  width: 100%;
+  flex: 1 0 auto;
 }
 
 .layout.sheet-mode {
@@ -301,6 +337,13 @@ a:hover {
   letter-spacing: 0;
 }
 
+.doc h1,
+.doc h2,
+.doc h3,
+.doc h4 {
+  scroll-margin-top: 90px;
+}
+
 .doc h1 {
   margin: 0 0 32px;
   padding-bottom: 18px;
@@ -401,6 +444,32 @@ a:hover {
   white-space: pre;
 }
 
+.math-inline,
+.math-block {
+  font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+}
+
+.math-inline {
+  color: #f2d49a;
+}
+
+.math-block {
+  margin: 16px 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--code);
+  color: #f2d49a;
+  white-space: pre-wrap;
+}
+
+.math-inline sub,
+.math-block sub {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
 .tool-section {
   margin-top: 44px;
 }
@@ -479,6 +548,16 @@ tr:last-child td {
   border-bottom: 0;
 }
 
+.site-footer {
+  max-width: 1500px;
+  width: 100%;
+  margin: auto auto 0;
+  padding: 0 30px 32px;
+  color: var(--faint);
+  font-size: 13px;
+  text-align: center;
+}
+
 @media (max-width: 1120px) {
   .layout {
     grid-template-columns: 230px minmax(0, 1fr);
@@ -500,6 +579,11 @@ tr:last-child td {
   .top-actions {
     flex-wrap: wrap;
     justify-content: flex-end;
+  }
+
+  .top-link {
+    padding: 5px 3px;
+    font-size: 12px;
   }
 
   .layout {
@@ -536,5 +620,9 @@ tr:last-child td {
 
   .doc h2 {
     font-size: 24px;
+  }
+
+  .site-footer {
+    padding: 0 16px 28px;
   }
 }

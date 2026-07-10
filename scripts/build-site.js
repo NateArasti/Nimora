@@ -24,6 +24,17 @@ const locales = [
   },
 ];
 
+const site = {
+  version: "v0.2.0",
+  repository: "https://github.com/NateArasti/Nimora",
+  latestRelease: "https://github.com/NateArasti/Nimora/releases/latest",
+  author: "https://github.com/NateArasti",
+  labels: {
+    en: { release: "Latest release", credit: "Made by" },
+    ru: { release: "Последний релиз", credit: "Создано" },
+  },
+};
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -141,6 +152,7 @@ function normalizeHref(href) {
     "rules.ru.md": "app:ru:rules:важное-замечание",
     "README.md": "app:en:readme:index",
     "README.ru.md": "app:ru:readme:index",
+    "LICENSE.md": "https://github.com/NateArasti/Nimora/blob/main/LICENSE.md",
   };
   return targets[href] || href;
 }
@@ -153,7 +165,7 @@ function inlineMarkdown(text) {
   });
   const math = [];
   result = result.replace(/\$([^$\n]+)\$/g, (_, value) => {
-    math.push(`<code>${value.trim()}</code>`);
+    math.push(`<span class="math-inline">${renderMath(value)}</span>`);
     return `\u0000MATH${math.length - 1}\u0000`;
   });
 
@@ -166,6 +178,13 @@ function inlineMarkdown(text) {
   return result
     .replace(/\u0000MATH(\d+)\u0000/g, (_, index) => math[Number(index)])
     .replace(/\u0000CODE(\d+)\u0000/g, (_, index) => code[Number(index)]);
+}
+
+function renderMath(value) {
+  return escapeHtml(value.trim()).replace(
+    /([\p{L}\p{N}])_(?:\{([^}]+)\}|([\p{L}\p{N}]+))/gu,
+    (_, base, braced, plain) => `${base}<sub>${braced || plain}</sub>`
+  );
 }
 
 function parseTable(lines) {
@@ -259,13 +278,18 @@ function parseBlocks(lines, baseLevel = 1, options = {}) {
       }
       if (index < lines.length) index += 1;
       const language = fence[1] ? ` class="language-${escapeHtml(fence[1])}"` : "";
-      html.push(`<pre><code${language}>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+      const code = codeLines.join("\n");
+      if (fence[1] === "text" && code.includes("_")) {
+        html.push(`<div class="math-block">${renderMath(code)}</div>`);
+      } else {
+        html.push(`<pre><code${language}>${escapeHtml(code)}</code></pre>`);
+      }
       continue;
     }
 
     const singleLineMath = line.match(/^\$\$\s*(.+?)\s*\$\$\s*$/);
     if (singleLineMath) {
-      html.push(`<pre><code>${escapeHtml(singleLineMath[1].trim())}</code></pre>`);
+      html.push(`<div class="math-block">${renderMath(singleLineMath[1])}</div>`);
       index += 1;
       continue;
     }
@@ -278,7 +302,7 @@ function parseBlocks(lines, baseLevel = 1, options = {}) {
         index += 1;
       }
       if (index < lines.length) index += 1;
-      html.push(`<pre><code>${escapeHtml(codeLines.join("\n").trim())}</code></pre>`);
+      html.push(`<div class="math-block">${renderMath(codeLines.join("\n"))}</div>`);
       continue;
     }
 
@@ -343,21 +367,6 @@ function parseBlocks(lines, baseLevel = 1, options = {}) {
   return { html: html.join("\n"), headings };
 }
 
-function renderToolsSection(locale) {
-  const isRu = locale.code === "ru";
-  return `
-<section class="tool-section" aria-labelledby="tools-title">
-  <h2 id="tools-title">${isRu ? "Инструменты" : "Tools"}</h2>
-  <button class="tool-card" type="button" data-page-key="tool:character-sheet">
-    <span class="tool-card-mark"></span>
-    <span>
-      <strong>${escapeHtml(sheetLabels[locale.code].title)}</strong>
-      <small>${isRu ? "Печатный локальный лист с автосохранением и настройками оформления." : "Printable local sheet with autosave and visual presets."}</small>
-    </span>
-  </button>
-</section>`;
-}
-
 function extractBetween(source, startPattern, endPattern) {
   const start = source.search(startPattern);
   if (start === -1) return "";
@@ -377,7 +386,7 @@ function extractSheet(pageHtml) {
 function buildData() {
   const builtLocales = locales.map((locale) => {
     const readmeFile = fs.existsSync(path.join(root, locale.readmeSource)) ? locale.readmeSource : "README.md";
-    const readme = stripSections(fs.readFileSync(path.join(root, readmeFile), "utf8"), ["Rules", "Правила"]);
+    const readme = stripSections(fs.readFileSync(path.join(root, readmeFile), "utf8"), ["Rules", "Правила", "Localizations", "Локализации"]);
     const rules = fs.readFileSync(path.join(root, locale.source), "utf8");
     return {
       ...locale,
@@ -425,13 +434,13 @@ function buildData() {
         key: page.key,
         slug: page.slug,
         type: "doc",
-        html: parsed.html + (page.source === "readme" && page.slug === "index" ? renderToolsSection(locale) : ""),
+        html: parsed.html,
         headings: parsed.headings.filter((heading) => heading.level > 1 && heading.level <= 4),
       };
     });
   }
 
-  return { locales: builtLocales, sheets, sheetStyle };
+  return { locales: builtLocales, sheets, sheetStyle, site };
 }
 
 function renderIndex(data) {
@@ -441,6 +450,7 @@ function renderIndex(data) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nimora</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&family=Cinzel:wght@400;700&family=Inter:wght@400;700&family=Lora:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
@@ -451,9 +461,11 @@ function renderIndex(data) {
   <header class="topbar">
     <button class="brand" type="button" data-brand>
       <span class="brand-mark"></span>
-      <span>Nimora</span>
+      <span>Nimora <small>${data.site.version}</small></span>
     </button>
     <div class="top-actions">
+      <a class="top-link" href="${data.site.repository}" target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 22v-3.87a4.15 4.15 0 0 0-1-3.11c3.28-.36 6.72-1.61 6.72-7.27A5.68 5.68 0 0 0 19.2 3.8 5.3 5.3 0 0 0 19.06.66S17.86.28 15 2.2a13.1 13.1 0 0 0-6 0C6.14.28 4.94.66 4.94.66A5.3 5.3 0 0 0 4.8 3.8a5.68 5.68 0 0 0-1.52 3.95C3.28 13.4 6.72 14.65 10 15a4.15 4.15 0 0 0-1 3.11V22"></path><path d="M9 18c-4.51 1.5-5-2-7-2"></path></svg><span>GitHub</span></a>
+      <a class="top-link" data-release-link href="${data.site.latestRelease}" target="_blank" rel="noreferrer" title="Latest release"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg><span></span></a>
       <button class="top-tool-link" type="button" data-page-key="tool:character-sheet"></button>
       <nav class="locale-tabs" aria-label="Language"></nav>
     </div>
@@ -466,6 +478,7 @@ function renderIndex(data) {
     <main class="content" id="content" tabindex="-1"></main>
     <aside class="toc" aria-label="On this page"></aside>
   </div>
+  <footer class="site-footer"><span data-credit></span> <a href="${data.site.author}" target="_blank" rel="noreferrer">NateArasti</a></footer>
   <script>window.NIMORA_DATA = ${JSON.stringify({
     locales: data.locales.map((locale) => ({
       code: locale.code,
@@ -475,6 +488,7 @@ function renderIndex(data) {
       pages: locale.pages,
     })),
     sheets: data.sheets,
+    site: data.site,
   })};</script>
   <script src="assets/app.js"></script>
 </body>
@@ -495,6 +509,8 @@ function renderAppScript() {
   const toc = document.querySelector(".toc");
   const localeTabs = document.querySelector(".locale-tabs");
   const toolLink = document.querySelector(".top-tool-link");
+  const releaseLink = document.querySelector("[data-release-link]");
+  const credit = document.querySelector("[data-credit]");
   const brand = document.querySelector("[data-brand]");
   let sheetInitialized = false;
 
@@ -529,6 +545,7 @@ function renderAppScript() {
     pageKey = locale.pages.some((page) => page.key === nextKey) ? nextKey : locale.pages[0].key;
     saveState();
     render();
+    window.scrollTo(0, 0);
   }
 
   function button(className, text, active, attrs = "") {
@@ -548,6 +565,11 @@ function renderAppScript() {
     root.lang = locale.code;
     sidebarTitle.textContent = locale.homeLabel;
     toolLink.textContent = data.sheets[locale.code].labels.title;
+    const releaseLabel = data.site.labels[locale.code].release;
+    releaseLink.lastElementChild.textContent = releaseLabel;
+    releaseLink.setAttribute("aria-label", releaseLabel);
+    releaseLink.title = releaseLabel;
+    credit.textContent = data.site.labels[locale.code].credit;
     toolLink.classList.toggle("active", page.type === "character-sheet");
 
     const pageIndex = locale.pages.findIndex((item) => item.key === page.key);
@@ -906,3 +928,4 @@ writeFile(path.join(outDir, "index.html"), renderIndex(data));
 writeFile(path.join(outDir, "assets", "app.js"), renderAppScript());
 writeFile(path.join(outDir, ".nojekyll"), "");
 copyFile(path.join(root, "site", "styles.css"), path.join(outDir, "assets", "styles.css"));
+copyFile(path.join(root, "site", "favicon.svg"), path.join(outDir, "assets", "favicon.svg"));

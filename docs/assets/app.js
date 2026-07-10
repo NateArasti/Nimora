@@ -11,6 +11,8 @@
   const toc = document.querySelector(".toc");
   const localeTabs = document.querySelector(".locale-tabs");
   const toolLink = document.querySelector(".top-tool-link");
+  const releaseLink = document.querySelector("[data-release-link]");
+  const credit = document.querySelector("[data-credit]");
   const brand = document.querySelector("[data-brand]");
   let sheetInitialized = false;
 
@@ -45,6 +47,7 @@
     pageKey = locale.pages.some((page) => page.key === nextKey) ? nextKey : locale.pages[0].key;
     saveState();
     render();
+    window.scrollTo(0, 0);
   }
 
   function button(className, text, active, attrs = "") {
@@ -64,6 +67,11 @@
     root.lang = locale.code;
     sidebarTitle.textContent = locale.homeLabel;
     toolLink.textContent = data.sheets[locale.code].labels.title;
+    const releaseLabel = data.site.labels[locale.code].release;
+    releaseLink.lastElementChild.textContent = releaseLabel;
+    releaseLink.setAttribute("aria-label", releaseLabel);
+    releaseLink.title = releaseLabel;
+    credit.textContent = data.site.labels[locale.code].credit;
     toolLink.classList.toggle("active", page.type === "character-sheet");
 
     const pageIndex = locale.pages.findIndex((item) => item.key === page.key);

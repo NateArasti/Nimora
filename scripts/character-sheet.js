@@ -266,6 +266,8 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       --sheet-border: #a08060;
       --sheet-border-light: #c4a87a;
       --sheet-font-family: Georgia, "Times New Roman", serif;
+      --sheet-heading-font: "Cinzel", Georgia, serif;
+      --sheet-label-font: "Alegreya", Georgia, serif;
       --sheet-default-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
       --sheet-texture: var(--sheet-default-texture);
       --sheet-gap: 8px;
@@ -330,6 +332,24 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       border-radius: 3px;
       background: var(--sheet-paper);
       cursor: pointer;
+    }
+    .customize-actions button,
+    .customize-footer button {
+      padding: 6px 10px;
+      border: 1px solid var(--sheet-accent);
+      border-radius: 3px;
+      background: var(--sheet-accent);
+      color: var(--sheet-paper);
+      cursor: pointer;
+      font-family: var(--sheet-label-font);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .customize-actions button:hover,
+    .customize-footer button:hover {
+      background: var(--sheet-heading);
+      filter: brightness(1.15);
     }
     .customize-panel {
       display: none;
@@ -550,6 +570,7 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .section-label,
     .box-title {
       color: var(--sheet-heading);
+      font-family: var(--sheet-heading-font);
       font-size: var(--label-size);
       font-weight: 700;
       letter-spacing: 0.1em;
@@ -890,6 +911,7 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       padding-bottom: 8px;
       border-bottom: 2px solid var(--sheet-accent);
       color: var(--sheet-heading);
+      font-family: var(--sheet-heading-font);
       font-size: 18px;
       font-weight: 700;
       letter-spacing: 0.08em;
