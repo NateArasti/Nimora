@@ -74,6 +74,7 @@ a:hover {
 }
 
 .brand {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -87,8 +88,13 @@ a:hover {
   letter-spacing: 0;
 }
 
-.brand small {
-  margin-left: 5px;
+.brand-copy {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.brand-version {
   color: var(--muted);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-size: 11px;
@@ -96,6 +102,7 @@ a:hover {
 }
 
 .brand-mark {
+  flex: 0 0 22px;
   width: 22px;
   height: 22px;
   border: 1px solid var(--accent);
@@ -571,19 +578,57 @@ tr:last-child td {
 @media (max-width: 760px) {
   .topbar {
     align-items: flex-start;
+    flex-wrap: wrap;
     gap: 12px;
     min-height: 0;
     padding: 14px 16px;
   }
 
   .top-actions {
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: 34px 34px minmax(0, 1fr) max-content;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .top-tool-link {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .locale-tabs {
+    justify-self: end;
   }
 
   .top-link {
+    display: inline-flex;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
     padding: 5px 3px;
     font-size: 12px;
+  }
+
+  .top-link span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .brand-copy {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .brand-version {
+    font-size: 10px;
+    line-height: 1.1;
   }
 
   .layout {

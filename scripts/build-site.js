@@ -481,7 +481,7 @@ function renderIndex(data) {
   <header class="topbar">
     <button class="brand" type="button" data-brand>
       <span class="brand-mark"></span>
-      <span>Nimora <small>${data.site.version}</small></span>
+      <span class="brand-copy"><span class="brand-name">Nimora</span><span class="brand-version">${data.site.version}</span></span>
     </button>
     <div class="top-actions">
       <a class="top-link" href="${data.site.repository}" target="_blank" rel="noreferrer" aria-label="GitHub" title="GitHub"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 22v-3.87a4.15 4.15 0 0 0-1-3.11c3.28-.36 6.72-1.61 6.72-7.27A5.68 5.68 0 0 0 19.2 3.8 5.3 5.3 0 0 0 19.06.66S17.86.28 15 2.2a13.1 13.1 0 0 0-6 0C6.14.28 4.94.66 4.94.66A5.3 5.3 0 0 0 4.8 3.8a5.68 5.68 0 0 0-1.52 3.95C3.28 13.4 6.72 14.65 10 15a4.15 4.15 0 0 0-1 3.11V22"></path><path d="M9 18c-4.51 1.5-5-2-7-2"></path></svg><span>GitHub</span></a>
