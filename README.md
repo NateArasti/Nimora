@@ -3,10 +3,16 @@
 **Nimora** is a flexible tabletop role-playing system focused on creative problem-solving, character-centered gameplay, and quick decision-making, rather than strict adherence to rules.
 It uses a simple d20-based system, ranked character traits, flexible abilities, scalable items, an exhaustion system, and extensive guidelines for the Game Master.
 
+## Localizations
+
+- [RU](README.ru.md)
+
 ## Rules
 
-- [Rules in English](rules.en.md)
-- [Rules in Russian](rules.ru.md)
+You can download PDF rules from [releases](https://github.com/NateArasti/Nimora/releases/latest)
+or read them right [here](rules.en.md):
+
+You can also check them out on the [site](https://natearasti.github.io/Nimora/).
 
 ## Development Goals
 
@@ -17,4 +23,8 @@ It uses a simple d20-based system, ranked character traits, flexible abilities, 
 
 ## Status
 
-The system was created primarily for teaching and playing with friends. However, it’s still playable, and I hope it helps someone have a great time.
+The system was created primarily for learning purposes and playing with friends. However, it's still playable, and I hope it helps someone have a great time.
+
+## License
+
+Nimora is licensed under [CC BY-SA 4.0](LICENSE.md).
