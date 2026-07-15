@@ -727,6 +727,14 @@ function renderAppScript() {
       localStorage.setItem(customizationStorageKey, JSON.stringify(customization));
     }
 
+    function formatExhaustionFormula(formula) {
+      return formula
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replace(/^([\\s\\S]*?)\\bi\\b(?=\\s*=)/, "$1<sub>i</sub>");
+    }
+
     function applyCustomization(customization) {
       const style = customization.style;
       shell.style.setProperty("--sheet-paper", style.paper);
@@ -754,10 +762,11 @@ function renderAppScript() {
       });
       const formula = document.querySelector("[data-exhaustion-formula]");
       if (formula) {
-        formula.textContent = defaultFormula
+        const formulaText = defaultFormula
           .replace(defaultStatLabels.body, customization.labels.body || defaultStatLabels.body)
           .replace(defaultStatLabels.mind, customization.labels.mind || defaultStatLabels.mind)
           .replace(defaultStatLabels.will, customization.labels.will || defaultStatLabels.will);
+        formula.innerHTML = formatExhaustionFormula(formulaText);
       }
       fitAllTextareas();
     }
@@ -901,7 +910,7 @@ function renderAppScript() {
       sheet.reset();
       portraitImg.removeAttribute("src");
       portraitImg.style.display = "none";
-      portraitHint.style.display = "block";
+      portraitHint.style.display = "flex";
       fitAllTextareas();
     });
     window.addEventListener("resize", fitAllTextareas);

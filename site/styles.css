@@ -216,6 +216,17 @@ a:hover {
   display: none;
 }
 
+.layout.sheet-mode + .site-footer {
+  max-width: 210mm;
+  min-height: 64px;
+  margin: 0 auto;
+  padding: 16px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
 .sidebar,
 .toc {
   position: sticky;

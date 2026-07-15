@@ -117,6 +117,10 @@ function escapeHtml(value) {
     .replace(/"/g, "&quot;");
 }
 
+function formatExhaustionFormula(value) {
+  return escapeHtml(value).replace(/^([\s\S]*?)\bi\b(?=\s*=)/, "$1<sub>i</sub>");
+}
+
 function field(name, extra = "") {
   return `<input type="text" name="${name}" ${extra}>`;
 }
@@ -808,12 +812,18 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .exhaustion-note {
       margin-top: 2px;
       color: #7a5c3a;
-      font-size: var(--small-label-size);
+      font-size: 10px;
       line-height: 1.35;
     }
-    .exhaustion-formula {
+    .health-formula.exhaustion-formula {
       font-size: var(--exhaustion-formula-size);
       text-align: center;
+      white-space: nowrap;
+      overflow-wrap: normal;
+    }
+    .exhaustion-formula sub {
+      font-size: 70%;
+      line-height: 0;
     }
     .health-formula {
       margin-top: 1px;
@@ -1044,7 +1054,7 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
                   <span style="color:var(--sheet-border)">/</span>
                   ${field("exhaustion-threshold")}
                 </div>
-                <div class="health-formula exhaustion-formula" data-exhaustion-formula>${escapeHtml(t.exhaustionFormula)}</div>
+                <div class="health-formula exhaustion-formula" data-exhaustion-formula>${formatExhaustionFormula(t.exhaustionFormula)}</div>
                 <div class="exhaustion-note">
                   <div><b>0</b> - ${escapeHtml(t.exhaustion0)}</div>
                   <div><b>1</b> - ${escapeHtml(t.exhaustion1)}</div>
@@ -1160,6 +1170,14 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
         localStorage.setItem(customizationStorageKey, JSON.stringify(customization));
       }
 
+      function formatExhaustionFormula(formula) {
+        return formula
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replace(/^([\\s\\S]*?)\\bi\\b(?=\\s*=)/, "$1<sub>i</sub>");
+      }
+
       function applyCustomization(customization) {
         const style = customization.style;
         shell.style.setProperty("--sheet-paper", style.paper);
@@ -1187,10 +1205,11 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
         });
         const formula = document.querySelector("[data-exhaustion-formula]");
         if (formula) {
-          formula.textContent = defaultFormula
+          const formulaText = defaultFormula
             .replace(defaultStatLabels.body, customization.labels.body || defaultStatLabels.body)
             .replace(defaultStatLabels.mind, customization.labels.mind || defaultStatLabels.mind)
             .replace(defaultStatLabels.will, customization.labels.will || defaultStatLabels.will);
+          formula.innerHTML = formatExhaustionFormula(formulaText);
         }
         fitAllTextareas();
       }
@@ -1336,7 +1355,7 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
         sheet.reset();
         portraitImg.removeAttribute("src");
         portraitImg.style.display = "none";
-        portraitHint.style.display = "block";
+        portraitHint.style.display = "flex";
         fitAllTextareas();
       });
       window.addEventListener("resize", fitAllTextareas);
