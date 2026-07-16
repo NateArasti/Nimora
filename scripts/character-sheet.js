@@ -280,7 +280,6 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       --section-label-size: 9px;
       --small-label-size: 7px;
       --field-font-size: 13px;
-      --field-line-height: 16px;
       --stat-name-size: 8px;
       --stat-value-size: 16px;
       --stat-mod-size: 13px;
@@ -309,25 +308,18 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .sheet-shell input[type="text"],
     .sheet-shell textarea {
       width: 100%;
-      min-width: 0;
       border: 0;
       border-bottom: 1px solid var(--sheet-border);
       background: transparent;
       outline: none;
       resize: none;
     }
-    .sheet-shell input[type="text"] {
-      display: block;
-      height: var(--field-line-height);
-      padding: 0 2px;
-      line-height: var(--field-line-height);
-    }
     .sheet-shell textarea {
       border: 1px solid var(--sheet-border-light);
       border-radius: 3px;
       background: rgba(255, 255, 255, 0.3);
       padding: 5px 7px;
-      line-height: 16px;
+      line-height: 1.25;
       overflow: hidden;
     }
     .top-tools {
@@ -567,15 +559,12 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       margin-bottom: 1px;
       font-size: var(--small-label-size);
       letter-spacing: 0.12em;
-      line-height: 8px;
     }
     .rank-badge input {
-      height: 26px;
       border-bottom: 0;
       color: var(--sheet-heading);
       font-size: 22px;
       font-weight: 700;
-      line-height: 26px;
       text-align: center;
     }
     .charname-row {
@@ -597,12 +586,10 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .charname-row label { white-space: nowrap; }
     .charname-row input {
       flex: 1;
-      height: 26px;
       border-bottom: 1.5px solid var(--sheet-accent);
       color: var(--sheet-heading);
       font-size: 20px;
       font-weight: 700;
-      line-height: 26px;
     }
     .header-meta {
       display: grid;
@@ -617,12 +604,10 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .field label {
       margin-top: 2px;
       font-size: var(--label-size);
-      line-height: 8px;
     }
     .section-label {
       margin-bottom: 3px;
       font-size: var(--section-label-size);
-      line-height: 10px;
     }
     .compact-label {
       margin-bottom: 0;
@@ -718,22 +703,18 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     }
     .stat-rank {
       width: 100%;
-      height: 22px;
       border-bottom: 1.5px solid var(--sheet-border);
       font-size: var(--stat-value-size);
       font-weight: 700;
-      line-height: 22px;
       text-align: center;
     }
     .stat-mod {
       width: 100%;
-      height: 19px;
       padding: 1px 0;
       border: 1px solid var(--sheet-border);
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.5);
       font-size: var(--stat-mod-size);
-      line-height: 15px;
       text-align: center;
     }
     .stat-sep {
@@ -776,15 +757,12 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       text-align: center;
     }
     .combat-stat input {
-      height: 30px;
       border-bottom: 0;
       font-size: 20px;
-      line-height: 30px;
       text-align: center;
     }
     .box-title {
       margin-top: 2px;
-      line-height: 10px;
       text-align: center;
     }
     .health-block {
@@ -806,17 +784,13 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     }
     .health-row input {
       width: 38px;
-      height: 17px;
       flex-shrink: 0;
-      line-height: 17px;
       text-align: center;
     }
     .exhaustion-score input {
       width: 36px;
-      height: 22px;
       font-size: 18px;
       font-weight: 700;
-      line-height: 22px;
     }
     .exhaustion-block > .section-label {
       text-align: center;
@@ -837,7 +811,6 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       max-width: 36px;
     }
     .exhaustion-score span {
-      line-height: 22px;
       text-align: center;
     }
     .exhaustion-note {
@@ -862,7 +835,6 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       color: #7a5c3a;
       font-size: 9.5px;
       font-style: italic;
-      line-height: 12px;
       white-space: normal;
       overflow-wrap: anywhere;
     }
@@ -878,10 +850,8 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
     .health-formula input {
       display: inline-block;
       width: 22px;
-      height: 14px;
       max-width: 22px;
       font-size: 10px;
-      line-height: 14px;
       text-align: center;
     }
     .hp-formula input {
@@ -1025,10 +995,6 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       }
       .sheet-shell textarea {
         overflow: hidden !important;
-      }
-      * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
       }
       @page {
         size: A4;
