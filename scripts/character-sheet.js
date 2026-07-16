@@ -965,9 +965,6 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
         padding: 0 !important;
         background: white !important;
       }
-      .sheet-shell {
-        --sheet-texture: none;
-      }
       .topbar,
       .top-tools,
       .customize-panel,
@@ -980,7 +977,6 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       }
       .page {
         margin: 0;
-        background-image: none !important;
         box-shadow: none;
         break-before: auto;
         break-after: page;
@@ -995,6 +991,10 @@ function renderCharacterSheetPage({ locale, page, allLocales }) {
       }
       .sheet-shell textarea {
         overflow: hidden !important;
+      }
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
       @page {
         size: A4;
